@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  churnlens:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: churnlens_app
+    image: churnlens:latest
+    ports:
+      - "8501:8501"
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      # Hot-reload during development — remove in production
+      - ./churn_dashboard.py:/app/churn_dashboard.py:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
