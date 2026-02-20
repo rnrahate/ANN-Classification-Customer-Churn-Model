@@ -29,24 +29,6 @@ pipenv/
 .ipynb_checkpoints/
 *.ipynb
 
-# ── Model Files (large binaries) ─────────────
-# Commit these via Git LFS or store in cloud storage
-trained_model/
-*.h5
-*.hdf5
-*.pb
-*.ckpt
-*.ckpt.*
-*.index
-*.data-*
-saved_model/
-
-# ── Preprocessing Artifacts ───────────────────
-preprocessing_models/
-*.pkl
-*.pickle
-*.joblib
-
 # ── Streamlit Cache ───────────────────────────
 .streamlit/secrets.toml
 __pycache__/
