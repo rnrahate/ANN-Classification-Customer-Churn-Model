@@ -1,0 +1,144 @@
+# ─────────────────────────────────────────────
+# ChurnLens — .gitignore
+# ─────────────────────────────────────────────
+
+# ── Python ───────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+
+# ── Virtual Environments ──────────────────────
+venv/
+.venv/
+env/
+.env/
+ENV/
+pipenv/
+.pipenv/
+
+# ── Environment Variables ─────────────────────
+.env
+.env.local
+.env.*.local
+*.env
+
+# ── Jupyter Notebooks ─────────────────────────
+.ipynb_checkpoints/
+*.ipynb
+
+# ── Model Files (large binaries) ─────────────
+# Commit these via Git LFS or store in cloud storage
+trained_model/
+*.h5
+*.hdf5
+*.pb
+*.ckpt
+*.ckpt.*
+*.index
+*.data-*
+saved_model/
+
+# ── Preprocessing Artifacts ───────────────────
+preprocessing_models/
+*.pkl
+*.pickle
+*.joblib
+
+# ── Streamlit Cache ───────────────────────────
+.streamlit/secrets.toml
+__pycache__/
+
+# ── Data Files ────────────────────────────────
+data/
+datasets/
+*.csv
+*.tsv
+*.xlsx
+*.xls
+*.json
+*.parquet
+*.feather
+
+# ── Logs & Outputs ───────────────────────────
+logs/
+*.log
+runs/
+outputs/
+results/
+checkpoints/
+
+# ── TensorFlow / Keras ────────────────────────
+tensorboard_logs/
+tf_logs/
+*.tfevents.*
+
+# ── OS Artifacts ──────────────────────────────
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+# ── IDE & Editors ─────────────────────────────
+# VS Code
+.vscode/
+*.code-workspace
+
+# PyCharm / JetBrains
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim / Neovim
+*.swp
+*.swo
+*.swn
+Session.vim
+
+# ── Testing ───────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+*.cover
+.hypothesis/
+test-results/
+
+# ── Build & Distribution ──────────────────────
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+site/
+docs/_build/
+
+# ── Docker ────────────────────────────────────
+.dockerignore
+
+# ── Miscellaneous ─────────────────────────────
+*.bak
+*.tmp
+*.temp
+*.orig
+*.swp
+.cache/
+.mypy_cache/
+.ruff_cache/
