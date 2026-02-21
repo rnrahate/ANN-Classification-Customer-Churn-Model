@@ -2,6 +2,14 @@
 
 > A production-ready, AI-powered customer churn intelligence dashboard built with TensorFlow, Scikit-learn, and Streamlit. Features a modern dark-themed UI with interactive Plotly visualizations and real-time risk classification.
 
+<div align="center">
+
+[![Live App](https://img.shields.io/badge/🌐%20Live%20App-Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://ann-classification-customer-churn-model-hqot5dmwoyve3jdtycgt7l.streamlit.app)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/rnrahate/ANN-Classification-Customer-Churn-Model)
+[![Docker Hub](https://img.shields.io/badge/Docker%20Hub-rnrahate%2Fchurnlens-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://hub.docker.com/repository/docker/rnrahate/churnlens/general)
+
+</div>
+
 ---
 
 ## 📸 Dashboard Preview
@@ -29,6 +37,87 @@
 
 ---
 
+## 🗺️ Project Flow
+
+```mermaid
+flowchart TD
+    A([🗄️ Raw Dataset\nChurn Modelling CSV]) --> B
+
+    subgraph PREPROCESS["⚙️ Preprocessing Pipeline"]
+        B[LabelEncoder\nGender → 0 / 1] --> C
+        C[OneHotEncoder\nGeography → France / Germany / Spain] --> D
+        D[StandardScaler\nNormalise all 12 features]
+    end
+
+    D --> E
+
+    subgraph TRAIN["🧠 Model Training"]
+        E[ANN Architecture\nInput → Dense → Dropout → Dense → Sigmoid] --> F
+        F[Binary Crossentropy Loss\nAdam Optimiser] --> G
+        G[Trained Model\nchurn_model.h5]
+    end
+
+    G --> H1
+    D --> H2
+
+    subgraph ARTIFACTS["💾 Saved Artifacts"]
+        H1[churn_model.h5]
+        H2[label_encoder_gender.pkl\none_hot_encoder_geography.pkl\nscaler_features.pkl]
+    end
+
+    H1 --> I
+    H2 --> I
+
+    subgraph APP["🖥️ Streamlit Dashboard — app.py"]
+        I[Load Model + Encoders + Scaler\nst.cache_resource] --> J
+        J[Sidebar User Inputs\n10 Customer Features] --> K
+        K[Preprocessing\nEncode → OHE → Scale] --> L
+        L[model.predict\nChurn Probability 0–1] --> M
+
+        subgraph RISK["🎯 Risk Classification"]
+            M{Probability\nThreshold}
+            M -->|≥ 0.65| N1[🔴 HIGH RISK]
+            M -->|0.40–0.65| N2[🟡 MODERATE RISK]
+            M -->|< 0.40| N3[🟢 LOW RISK]
+        end
+
+        N1 & N2 & N3 --> O
+
+        subgraph VIZ["📊 Visualisations"]
+            O[KPI Metric Cards\nChurn % · Retention % · Confidence] --> P
+            P[Gauge Chart\nBar Chart\nDonut Pie Chart] --> Q
+            Q[Progress Bar\nRisk Badge\nInterpretation Panel]
+        end
+    end
+
+    Q --> R
+
+    subgraph DEPLOY["🚀 Deployment"]
+        R[Docker Build\nDockerfile + docker-compose.yml] --> S
+        S[Docker Hub\nrnrahate/churnlens] --> T
+        R --> U
+        U[Streamlit Cloud\nLive Public App]
+    end
+
+    style PREPROCESS fill:#1a2332,stroke:#2ea043,color:#c9d1d9
+    style TRAIN fill:#1a2332,stroke:#388bfd,color:#c9d1d9
+    style ARTIFACTS fill:#1a2332,stroke:#d29922,color:#c9d1d9
+    style APP fill:#1a2332,stroke:#8957e5,color:#c9d1d9
+    style RISK fill:#0d1117,stroke:#f85149,color:#c9d1d9
+    style VIZ fill:#0d1117,stroke:#3fb950,color:#c9d1d9
+    style DEPLOY fill:#1a2332,stroke:#2496ed,color:#c9d1d9
+
+    style A fill:#0d1117,stroke:#2ea043,color:#3fb950
+    style G fill:#0d1117,stroke:#388bfd,color:#58a6ff
+    style S fill:#0d1117,stroke:#2496ed,color:#58a6ff
+    style U fill:#0d1117,stroke:#ff4b4b,color:#ff4b4b
+    style N1 fill:#3d0000,stroke:#f85149,color:#f85149
+    style N2 fill:#2d2000,stroke:#d29922,color:#d29922
+    style N3 fill:#002d00,stroke:#3fb950,color:#3fb950
+```
+
+---
+
 ## ✨ Features
 
 - **Real-time churn probability** prediction using a trained TensorFlow ANN
@@ -50,7 +139,7 @@
 ```
 churnlens/
 │
-├── churn_dashboard.py                  # Main Streamlit application
+├── app.py                              # Main Streamlit application
 │
 ├── trained_model/
 │   └── churn_model.h5                  # Trained TensorFlow/Keras model
@@ -60,6 +149,8 @@ churnlens/
 │   ├── label_encoder_gender.pkl        # LabelEncoder for Gender
 │   └── scaler_features.pkl            # StandardScaler for all features
 │
+├── Dockerfile                          # Docker container definition
+├── docker-compose.yml                  # Docker Compose config
 ├── requirements.txt                    # Python dependencies
 └── README.md                           # This file
 ```
@@ -71,8 +162,8 @@ churnlens/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/churnlens.git
-cd churnlens
+git clone https://github.com/rnrahate/ANN-Classification-Customer-Churn-Model.git
+cd ANN-Classification-Customer-Churn-Model
 ```
 
 ### 2. Create a Virtual Environment
@@ -107,10 +198,36 @@ Ensure the following files exist in their respective directories before running 
 ### 5. Run the App
 
 ```bash
-streamlit run churn_dashboard.py
+streamlit run app.py
 ```
 
 The app will open at **http://localhost:8501**
+
+---
+
+## 🐳 Docker Deployment
+
+### Pull from Docker Hub
+
+```bash
+docker pull rnrahate/churnlens:latest
+docker run -p 8501:8501 rnrahate/churnlens:latest
+```
+
+### Build Locally
+
+```bash
+docker build -t churnlens .
+docker run -p 8501:8501 churnlens
+```
+
+### Using Docker Compose
+
+```bash
+docker compose up --build
+```
+
+> Access the app at **http://localhost:8501**
 
 ---
 
@@ -123,12 +240,6 @@ scikit-learn>=1.3.0
 pandas>=2.0.0
 numpy>=1.24.0
 plotly>=5.18.0
-```
-
-Generate `requirements.txt` automatically with:
-
-```bash
-pip freeze > requirements.txt
 ```
 
 ---
@@ -176,17 +287,13 @@ FEATURE_ORDER = [
 
 ## 🎯 Risk Classification
 
-Predictions are bucketed into three risk tiers based on churn probability:
-
 | Probability Range | Risk Tier | UI Color | Recommended Action |
 |-------------------|-----------|----------|--------------------|
 | 0% – 40% | 🟢 Low Risk | Green `#3fb950` | Cross-sell / upsell opportunities |
 | 40% – 65% | 🟡 Moderate Risk | Amber `#d29922` | Light-touch engagement campaigns |
 | 65% – 100% | 🔴 High Risk | Red `#f85149` | Immediate retention intervention |
 
-> The decision boundary is set at **0.50** by default (standard sigmoid threshold).  
-> Model confidence is calculated as the normalized distance from this boundary:  
-> `confidence = |prob − 0.5| / 0.5 × 100%`
+> Decision boundary at **0.50** · Confidence = `|prob − 0.5| / 0.5 × 100%`
 
 ---
 
@@ -209,46 +316,9 @@ Predictions are bucketed into three risk tiers based on churn probability:
 
 ---
 
-## 🚀 Deployment
-
-### Deploy to Streamlit Community Cloud
-
-1. Push your repository to GitHub (ensure model files are included or loaded from cloud storage)
-2. Go to [share.streamlit.io](https://share.streamlit.io)
-3. Connect your GitHub repo
-4. Set **Main file path** to `churn_dashboard.py`
-5. Click **Deploy**
-
-> ⚠️ If your `.h5` model is large (>100MB), consider storing it in cloud storage (S3, GCS) and loading it at runtime, or use Git LFS.
-
-### Deploy with Docker
-
-```dockerfile
-FROM python:3.10-slim
-
-WORKDIR /app
-COPY . .
-
-RUN pip install --no-cache-dir -r requirements.txt
-
-EXPOSE 8501
-
-CMD ["streamlit", "run", "churn_dashboard.py", \
-     "--server.port=8501", "--server.address=0.0.0.0"]
-```
-
-```bash
-docker build -t churnlens .
-docker run -p 8501:8501 churnlens
-```
-
----
-
 ## 🔧 Customization
 
 ### Change the Risk Thresholds
-
-Edit these values in `churn_dashboard.py`:
 
 ```python
 if prob >= 0.65:        # ← High risk threshold
@@ -260,8 +330,6 @@ else:
 ```
 
 ### Swap the Color Palette
-
-All risk colors are defined as local variables and cascade to every chart and badge:
 
 ```python
 risk_color = "#f85149"   # High  — change to any hex
