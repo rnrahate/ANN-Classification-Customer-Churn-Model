@@ -125,3 +125,4 @@ docs/_build/
 .mypy_cache/
 .ruff_cache/
 *.pkl
+*.h5
