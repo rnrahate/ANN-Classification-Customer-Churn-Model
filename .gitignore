@@ -124,3 +124,4 @@ docs/_build/
 .cache/
 .mypy_cache/
 .ruff_cache/
+*.pkl
