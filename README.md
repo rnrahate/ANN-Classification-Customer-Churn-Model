@@ -12,108 +12,32 @@
 
 ---
 
-## 📸 Dashboard Preview
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│  🔮 ChurnLens  │  Customer Churn Intelligence Dashboard             │
-├──────────────┬──────────────────────────────────────────────────────┤
-│              │  [KPI Cards]  Churn % │ Retention % │ Risk │ Conf.  │
-│  SIDEBAR     │─────────────────────────────────────────────────────│
-│              │  [Gauge Chart] [Bar Chart] [Donut Pie]               │
-│  · Geography │─────────────────────────────────────────────────────│
-│  · Gender    │  [Feature Table]   [Risk Interpretation Panel]       │
-│  · Age       │─────────────────────────────────────────────────────│
-│  · Credit    │  ▼ Advanced Details (Expander)                       │
-│  · Balance   │    Scaled Feature Vector │ Model Architecture Info   │
-│  · Salary    │                                                       │
-│  · Tenure    │                                                       │
-│  · Products  │                                                       │
-│  · Cards     │                                                       │
-│              │                                                       │
-│  [⚡ Predict] │                                                       │
-└──────────────┴──────────────────────────────────────────────────────┘
-```
-
----
-
 ## 🗺️ Project Flow
 
 ```mermaid
-flowchart TD
-    A([🗄️ Raw Dataset\nChurn Modelling CSV]) --> B
-
-    subgraph PREPROCESS["⚙️ Preprocessing Pipeline"]
-        B[LabelEncoder\nGender → 0 / 1] --> C
-        C[OneHotEncoder\nGeography → France / Germany / Spain] --> D
-        D[StandardScaler\nNormalise all 12 features]
-    end
-
-    D --> E
-
-    subgraph TRAIN["🧠 Model Training"]
-        E[ANN Architecture\nInput → Dense → Dropout → Dense → Sigmoid] --> F
-        F[Binary Crossentropy Loss\nAdam Optimiser] --> G
-        G[Trained Model\nchurn_model.h5]
-    end
-
-    G --> H1
-    D --> H2
-
-    subgraph ARTIFACTS["💾 Saved Artifacts"]
-        H1[churn_model.h5]
-        H2[label_encoder_gender.pkl\none_hot_encoder_geography.pkl\nscaler_features.pkl]
-    end
-
-    H1 --> I
-    H2 --> I
-
-    subgraph APP["🖥️ Streamlit Dashboard — app.py"]
-        I[Load Model + Encoders + Scaler\nst.cache_resource] --> J
-        J[Sidebar User Inputs\n10 Customer Features] --> K
-        K[Preprocessing\nEncode → OHE → Scale] --> L
-        L[model.predict\nChurn Probability 0–1] --> M
-
-        subgraph RISK["🎯 Risk Classification"]
-            M{Probability\nThreshold}
-            M -->|≥ 0.65| N1[🔴 HIGH RISK]
-            M -->|0.40–0.65| N2[🟡 MODERATE RISK]
-            M -->|< 0.40| N3[🟢 LOW RISK]
-        end
-
-        N1 & N2 & N3 --> O
-
-        subgraph VIZ["📊 Visualisations"]
-            O[KPI Metric Cards\nChurn % · Retention % · Confidence] --> P
-            P[Gauge Chart\nBar Chart\nDonut Pie Chart] --> Q
-            Q[Progress Bar\nRisk Badge\nInterpretation Panel]
-        end
-    end
-
-    Q --> R
-
-    subgraph DEPLOY["🚀 Deployment"]
-        R[Docker Build\nDockerfile + docker-compose.yml] --> S
-        S[Docker Hub\nrnrahate/churnlens] --> T
-        R --> U
-        U[Streamlit Cloud\nLive Public App]
-    end
-
-    style PREPROCESS fill:#1a2332,stroke:#2ea043,color:#c9d1d9
-    style TRAIN fill:#1a2332,stroke:#388bfd,color:#c9d1d9
-    style ARTIFACTS fill:#1a2332,stroke:#d29922,color:#c9d1d9
-    style APP fill:#1a2332,stroke:#8957e5,color:#c9d1d9
-    style RISK fill:#0d1117,stroke:#f85149,color:#c9d1d9
-    style VIZ fill:#0d1117,stroke:#3fb950,color:#c9d1d9
-    style DEPLOY fill:#1a2332,stroke:#2496ed,color:#c9d1d9
+flowchart LR
+    A([📦 Dataset]) --> B[⚙️ Preprocess\nEncode · Scale]
+    B --> C[🧠 Train ANN\nTensorFlow · Keras]
+    C --> D[💾 Save Artifacts\n.h5 · .pkl files]
+    D --> E[🖥️ Streamlit App\nUser Inputs]
+    E --> F{🎯 Predict}
+    F -->|≥ 0.65| G[🔴 High Risk]
+    F -->|0.40–0.65| H[🟡 Moderate]
+    F -->|< 0.40| I[🟢 Low Risk]
+    G & H & I --> J[📊 Dashboard\nCharts · KPIs · Insights]
+    J --> K([🚀 Deploy\nDocker · Streamlit Cloud])
 
     style A fill:#0d1117,stroke:#2ea043,color:#3fb950
-    style G fill:#0d1117,stroke:#388bfd,color:#58a6ff
-    style S fill:#0d1117,stroke:#2496ed,color:#58a6ff
-    style U fill:#0d1117,stroke:#ff4b4b,color:#ff4b4b
-    style N1 fill:#3d0000,stroke:#f85149,color:#f85149
-    style N2 fill:#2d2000,stroke:#d29922,color:#d29922
-    style N3 fill:#002d00,stroke:#3fb950,color:#3fb950
+    style B fill:#1a2332,stroke:#2ea043,color:#c9d1d9
+    style C fill:#1a2332,stroke:#388bfd,color:#c9d1d9
+    style D fill:#1a2332,stroke:#d29922,color:#c9d1d9
+    style E fill:#1a2332,stroke:#8957e5,color:#c9d1d9
+    style F fill:#0d1117,stroke:#8b949e,color:#e6edf3
+    style G fill:#3d0000,stroke:#f85149,color:#f85149
+    style H fill:#2d2000,stroke:#d29922,color:#d29922
+    style I fill:#002d00,stroke:#3fb950,color:#3fb950
+    style J fill:#1a2332,stroke:#3fb950,color:#c9d1d9
+    style K fill:#0d1117,stroke:#2496ed,color:#58a6ff
 ```
 
 ---
@@ -170,76 +94,30 @@ cd ANN-Classification-Customer-Churn-Model
 
 ```bash
 python -m venv venv
-
-# macOS / Linux
-source venv/bin/activate
-
-# Windows
-venv\Scripts\activate
+source venv/bin/activate      # macOS / Linux
+venv\Scripts\activate         # Windows
 ```
 
-### 3. Install Dependencies
+### 3. Install & Run
 
 ```bash
 pip install -r requirements.txt
-```
-
-### 4. Add Your Model & Preprocessors
-
-Ensure the following files exist in their respective directories before running the app:
-
-| File | Path |
-|------|------|
-| Keras model | `trained_model/churn_model.h5` |
-| OHE encoder | `preprocessing_models/one_hot_encoder_geography.pkl` |
-| Label encoder | `preprocessing_models/label_encoder_gender.pkl` |
-| Feature scaler | `preprocessing_models/scaler_features.pkl` |
-
-### 5. Run the App
-
-```bash
 streamlit run app.py
 ```
 
-The app will open at **http://localhost:8501**
+> App opens at **http://localhost:8501**
 
 ---
 
 ## 🐳 Docker Deployment
 
-### Pull from Docker Hub
-
 ```bash
+# Pull from Docker Hub
 docker pull rnrahate/churnlens:latest
 docker run -p 8501:8501 rnrahate/churnlens:latest
-```
 
-### Build Locally
-
-```bash
-docker build -t churnlens .
-docker run -p 8501:8501 churnlens
-```
-
-### Using Docker Compose
-
-```bash
+# Or build locally
 docker compose up --build
-```
-
-> Access the app at **http://localhost:8501**
-
----
-
-## 📦 Requirements
-
-```txt
-streamlit>=1.32.0
-tensorflow>=2.12.0
-scikit-learn>=1.3.0
-pandas>=2.0.0
-numpy>=1.24.0
-plotly>=5.18.0
 ```
 
 ---
@@ -261,7 +139,7 @@ plotly>=5.18.0
 | `IsActiveMember` | Binary | StandardScaler |
 | `EstimatedSalary` | Numeric | StandardScaler |
 
-### Feature Order (must match training pipeline)
+### Feature Order
 
 ```python
 FEATURE_ORDER = [
@@ -271,97 +149,44 @@ FEATURE_ORDER = [
 ]
 ```
 
-> ⚠️ **Important:** This column order must exactly match the order used when fitting the `StandardScaler` during training. Any mismatch will silently produce incorrect predictions.
-
 ### Model Architecture
 
 | Property | Value |
 |----------|-------|
 | Framework | TensorFlow / Keras |
-| File format | `.h5` |
 | Output activation | Sigmoid |
-| Task | Binary classification (churn / no churn) |
-| Output range | 0.0 → 1.0 (probability) |
+| Task | Binary classification |
+| Output range | 0.0 → 1.0 |
 
 ---
 
 ## 🎯 Risk Classification
 
-| Probability Range | Risk Tier | UI Color | Recommended Action |
-|-------------------|-----------|----------|--------------------|
-| 0% – 40% | 🟢 Low Risk | Green `#3fb950` | Cross-sell / upsell opportunities |
-| 40% – 65% | 🟡 Moderate Risk | Amber `#d29922` | Light-touch engagement campaigns |
-| 65% – 100% | 🔴 High Risk | Red `#f85149` | Immediate retention intervention |
+| Range | Tier | Action |
+|-------|------|--------|
+| 0–40% | 🟢 Low | Cross-sell / upsell |
+| 40–65% | 🟡 Moderate | Light engagement campaign |
+| 65–100% | 🔴 High | Immediate retention action |
 
-> Decision boundary at **0.50** · Confidence = `|prob − 0.5| / 0.5 × 100%`
-
----
-
-## 🖥 UI Architecture
-
-| Section | Component | Description |
-|---------|-----------|-------------|
-| Hero Header | Custom HTML/CSS | App title, subtitle, animated gradient card |
-| Sidebar | `st.sidebar` | 10 customer input fields, grouped by category |
-| KPI Row | `st.metric` | Churn %, Retention %, Risk Level, Confidence |
-| Progress Bar | Custom CSS | Gradient fill driven by probability value |
-| Risk Badge | Custom HTML | Color-coded inline badge with tier label |
-| Gauge Chart | `plotly.graph_objects` | Indicator with 3-zone arc and threshold line |
-| Bar Chart | `plotly.graph_objects` | Churn vs Retention vertical bars |
-| Donut Chart | `plotly.graph_objects` | Probability distribution with center annotation |
-| Feature Table | Custom HTML | Raw input key-value pairs |
-| Interpretation | Custom HTML | Tier-specific business recommendation card |
-| Threshold Info | Custom HTML | Pill badges explaining all 3 thresholds |
-| Advanced Panel | `st.expander` | Scaled vector, raw features, model metadata |
-
----
-
-## 🔧 Customization
-
-### Change the Risk Thresholds
-
-```python
-if prob >= 0.65:        # ← High risk threshold
-    risk_tier = "HIGH"
-elif prob >= 0.40:      # ← Medium risk threshold
-    risk_tier = "MEDIUM"
-else:
-    risk_tier = "LOW"
-```
-
-### Swap the Color Palette
-
-```python
-risk_color = "#f85149"   # High  — change to any hex
-risk_color = "#d29922"   # Med   — change to any hex
-risk_color = "#3fb950"   # Low   — change to any hex
-```
+> Decision boundary **0.50** · Confidence = `|prob − 0.5| / 0.5 × 100%`
 
 ---
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/your-feature`
-3. Commit your changes: `git commit -m 'Add your feature'`
-4. Push to the branch: `git push origin feature/your-feature`
-5. Open a Pull Request
+1. Fork → create branch → commit → push → open PR
 
 ---
 
 ## 📄 License
 
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
 ## 🙏 Acknowledgements
 
-- [Streamlit](https://streamlit.io/) — rapid ML app framework
-- [TensorFlow / Keras](https://www.tensorflow.org/) — deep learning backend
-- [Plotly](https://plotly.com/python/) — interactive chart library
-- [Scikit-learn](https://scikit-learn.org/) — preprocessing utilities
-- Dataset inspired by the [Churn Modelling Dataset](https://www.kaggle.com/datasets/shubh0799/churn-modelling) on Kaggle
+[Streamlit](https://streamlit.io/) · [TensorFlow](https://www.tensorflow.org/) · [Plotly](https://plotly.com/python/) · [Scikit-learn](https://scikit-learn.org/) · [Churn Dataset](https://www.kaggle.com/datasets/shubh0799/churn-modelling)
 
 ---
 
